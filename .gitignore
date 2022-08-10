@@ -17,7 +17,7 @@ pluginTemp/js/*
 pluginTemp/libs/*
 plugin-*.zip
 
-/dumi/.umi/.cache/babel-loader
+dumi
 
 .history
 # Editor directories and files
