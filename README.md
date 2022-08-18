@@ -83,11 +83,11 @@
 
 ## 数据交互
 ### 应用
-**`定义用户输入`**
+**`定义配置项`**
 
 config.json,customconf配置项
 
-**`接收用户输入`**
+**`接收配置项`**
 * react version
   
   this.props.customConfig
@@ -95,11 +95,11 @@ config.json,customconf配置项
   
   this.customConfig
 ### 分析仪
-**`定义用户输入`**
+**`定义配置项`**
 
 config.json,vars配置项
 
-**`接收用户输入`**
+**`接收配置项`**
 * react version
   
   this.props.options?.externalVariables
@@ -108,11 +108,11 @@ config.json,vars配置项
   this.options?.externalVariables
 
 ### 大屏
-**`定义用户输入`**
+**`定义配置项`**
 
 交互-选择变量
 
-**`接收用户输入`**
+**`接收配置项`**
 * vue version
   
   this.customConfig?.variable.default_value
@@ -121,11 +121,11 @@ config.json,vars配置项
   this.props.variable?.default_value
 
 ### 填报
-**`定义用户输入`**
+**`定义配置项`**
 
 designConfiguration组件
 
-**`接收用户输入`**
+**`接收配置项`**
 * vue version
   
   this.customConfig?.configuration
