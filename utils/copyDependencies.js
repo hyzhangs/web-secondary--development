@@ -13,18 +13,24 @@ const path = require("path")
 let fileContainer = new Set([])
 let packageJsonDependencies = []
 let packageJson = require("./package.json")
-let _ = require("lodash")
 let mirrmorDir = "mirrorDependencies"
-main("src/common/Charts/gis/index.js", mirrmorDir)
+let targetFiles = [
+  "src/application-new/add/components/block/CustomLog/index.jsx",
+  "src/app/components/detailSetting/CatalogSetting.jsx"
+]
+main(targetFiles, mirrmorDir)
 
 /**
  *
- * @param targetFile 要复制引用的目标文件
+ * @param targetFile  要复制引用的目标文件
  * @param mirrmorDir 复制文件存放的目录，将在项目根目录生成
  * @return {Promise<void>}
  */
-async function main(targetFile, mirrmorDir) {
-  await copyFile(targetFile, mirrmorDir)
+async function main(targetFiles, mirrmorDir) {
+  for (let i = 0; i < targetFiles.length; i++) {
+    let targetFile = targetFiles[i]
+    await copyFile(targetFile, mirrmorDir)
+  }
   //对依赖项进行处理，保留/及.之前的内容，以防止依赖缺失
   handlePackageJson()
 }
@@ -43,8 +49,16 @@ function handlePackageJson() {
     delete packageJson.devDependencies[dependenceKey]
   }
   fs.writeFileSync(path.resolve(__dirname, `${mirrmorDir}/package.json`), JSON.stringify(packageJson))
-  fs.copyFileSync(path.resolve(__dirname, "pnpm-lock.yaml"), path.resolve(__dirname, `${mirrmorDir}/pnpm-lock.yaml`))
-  fs.copyFileSync(path.resolve(__dirname, "yarn.lock"), path.resolve(__dirname, `${mirrmorDir}/yarn.lock`))
+  try {
+    fs.copyFileSync(path.resolve(__dirname, "pnpm-lock.yaml"), path.resolve(__dirname, `${mirrmorDir}/pnpm-lock.yaml`))
+  } catch (e) {
+    console.log(e);
+  }
+  try {
+    fs.copyFileSync(path.resolve(__dirname, "yarn.lock"), path.resolve(__dirname, `${mirrmorDir}/yarn.lock`))
+  } catch (e) {
+    console.log(e);
+  }
 
 }
 
@@ -52,7 +66,7 @@ async function copyFile(originPath, mirrmorDir) {
   let targetDir = path.resolve(__dirname, `${mirrmorDir}/${path.dirname(originPath)}`)
   let targetPath = path.resolve(__dirname, `${mirrmorDir}/${originPath}`)
   //将src开头相对路径依赖改成当前文件所在文件夹的相对路径，此处不直接使用copyFileSync
-   mkdirSync(targetDir)
+  mkdirSync(targetDir)
   // fs.copyFileSync(path.resolve(__dirname, originPath), targetPath)
   let fileContent = fs.readFileSync(originPath, "utf-8");
   let currentDir = path.dirname(originPath)
@@ -69,17 +83,19 @@ async function copyFile(originPath, mirrmorDir) {
       const upCaseExcludeArr = ["src/common/Constant"]
       $1 = $1.replaceAll("'", "")
       if (fs.existsSync($1) && !upCaseExcludeArr.includes($1)) {
-        stat($1).then(isFile => $1 = isFile ? `${$1}` : `${$1}/index.js`)
+        stat($1).then(isFile => $1 = isFile ? $1 : `${$1}/index.js`)
       } else {
-        //写代码的时候showIcon.js这个文件有bug老是提示不存在，暂时使用fs.existsSync规避
         if (fs.existsSync(`${$1}.js`) && !fileContainer.has($1)) {
           $1 = `${$1}.js`
+        }
+        if (fs.existsSync(`${$1}.jsx`) && !fileContainer.has($1)) {
+          $1 = `${$1}.jsx`
         }
       }
       let relativeStr = generateRelativeStr(currentDir)
       $1 = `'${relativeStr + $1}'`
     }
-    return findStr.replace(originStr,$1)
+    return findStr.replace(originStr, $1)
   });
   fs.writeFileSync(targetPath, writeContent)
   let dependencies = getDependencies(fileContent);
@@ -103,10 +119,13 @@ async function copyFile(originPath, mirrmorDir) {
         await copyFile(dependence, mirrmorDir)
       }
     } else {
-      //写代码的时候showIcon.js这个文件有bug老是提示不存在，暂时使用fs.existsSync规避
       if (fs.existsSync(`${dependence}.js`) && !fileContainer.has(dependence)) {
         fileContainer.add(dependence)
         await copyFile(`${dependence}.js`, mirrmorDir)
+      }
+      if (fs.existsSync(`${dependence}.jsx`) && !fileContainer.has(dependence)) {
+        fileContainer.add(dependence)
+        await copyFile(`${dependence}.jsx`, mirrmorDir)
       }
     }
   }
