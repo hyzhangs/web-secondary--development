@@ -70,13 +70,14 @@ async function copyFile(originPath, mirrmorDir) {
   // fs.copyFileSync(path.resolve(__dirname, originPath), targetPath)
   let fileContent = fs.readFileSync(originPath, "utf-8");
   let currentDir = path.dirname(originPath)
-  let writeContent = fileContent.replace(/import.+('.+');/g, function (findStr, $1) {
+
+  function replaceFunc(findStr, $1) {
     let originStr = $1;
     $1 = $1.replace("'common/", "'src/common/")
            .replace("'utils/", "'src/common/utils/")
            .replace("'service/", "'src/common/service/")
            .replace("'core/", "'src/common/core/")
-           .replace("'components/", "'src/common/components/")
+           .replace("'components/", "'src/components/")
            .replace("'@/", "'src/")
     if ($1.startsWith("'src")) {
       //因为引入文件为简写，需要补充完整的路径
@@ -84,18 +85,21 @@ async function copyFile(originPath, mirrmorDir) {
       $1 = $1.replaceAll("'", "")
       if (fs.existsSync($1) && !upCaseExcludeArr.includes($1)) {
         stat($1).then(isFile => $1 = isFile ? $1 : `${$1}/index.js`)
-      } else {
-        if (fs.existsSync(`${$1}.js`) && !fileContainer.has($1)) {
-          $1 = `${$1}.js`
-        }
-        if (fs.existsSync(`${$1}.jsx`) && !fileContainer.has($1)) {
-          $1 = `${$1}.jsx`
-        }
+      } else if (fs.existsSync(`${$1}.js`) && !fileContainer.has($1)) {
+        $1 = `${$1}.js`
+      } else if (fs.existsSync(`${$1}.jsx`) && !fileContainer.has($1)) {
+        $1 = `${$1}.jsx`
       }
       let relativeStr = generateRelativeStr(currentDir)
       $1 = `'${relativeStr + $1}'`
     }
     return findStr.replace(originStr, $1)
+  }
+
+  let writeContent = fileContent.replace(/import.+('.+')/g, function (findStr, $1) {
+    replaceFunc(findStr, $1)
+  }).replace(/\} from ('.+')/g, function (findStr, $1) {
+    replaceFunc(findStr, $1)
   });
   fs.writeFileSync(targetPath, writeContent)
   let dependencies = getDependencies(fileContent);
@@ -118,15 +122,12 @@ async function copyFile(originPath, mirrmorDir) {
         fileContainer.add(dependence)
         await copyFile(dependence, mirrmorDir)
       }
-    } else {
-      if (fs.existsSync(`${dependence}.js`) && !fileContainer.has(dependence)) {
-        fileContainer.add(dependence)
-        await copyFile(`${dependence}.js`, mirrmorDir)
-      }
-      if (fs.existsSync(`${dependence}.jsx`) && !fileContainer.has(dependence)) {
-        fileContainer.add(dependence)
-        await copyFile(`${dependence}.jsx`, mirrmorDir)
-      }
+    } else if (fs.existsSync(`${dependence}.js`) && !fileContainer.has(dependence)) {
+      fileContainer.add(dependence)
+      await copyFile(`${dependence}.js`, mirrmorDir)
+    } else if (fs.existsSync(`${dependence}.jsx`) && !fileContainer.has(dependence)) {
+      fileContainer.add(dependence)
+      await copyFile(`${dependence}.jsx`, mirrmorDir)
     }
   }
 }
@@ -153,17 +154,18 @@ async function stat(file) {
 
 function getDependencies(fileContent) {
   //此处把引号一起包进去，方便后边处理路径映射
-  let allDependencies = fileContent.match(/(?<=import.+)\'.*?\'/g) || [];
+  let allDependencies = Array.from(new Set([
+    ...(fileContent.match(/(?<=import.+)\'.*?\'/g) || []),
+    ...(fileContent.match(/(?<=\} from )\'.*?\'/g) || [])
+  ])) || [];
   //import不是顶格的，为注释的import，去除
   // todo 此处没有考虑import()函数的情况，如果需要再补充部分逻辑
-  let extraDependencies = fileContent.match(/(?<=[ ]import.+)\'.*?\'/g) || [];
-  let dependencies = allDependencies.filter(v => !extraDependencies.some((item) => item === v))
-  dependencies = dependencies.map(dependence => {
+  let dependencies = allDependencies.map(dependence => {
     return dependence.replace("'common/", "'src/common/")
                      .replace("'utils/", "'src/common/utils/")
                      .replace("'service/", "'src/common/service/")
                      .replace("'core/", "'src/common/core/")
-                     .replace("'components/", "'src/common/components/")
+                     .replace("'components/", "'src/components/")
                      .replace("'@/", "'src/")
                      .replace(/'/g, "")
   })
