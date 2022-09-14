@@ -2,7 +2,7 @@
  * @Author: jiangsixian jiangsixian@njsdata.com
  * @Date: 2022-09-07 19:20:48
  * @LastEditors: jiangsixian jiangsixian@njsdata.com
- * @LastEditTime: 2022-09-08 13:44:39
+ * @LastEditTime: 2022-9-13 14:14:53
  * @FilePath: \undefinedd:\Package\workspace\onemind-web\copyDependencies.js
  * @Description: copy a file with local dependent files and package.json and so on，replace local dependencies as ../
  *
@@ -49,6 +49,7 @@ function handlePackageJson() {
     delete packageJson.devDependencies[dependenceKey]
   }
   fs.writeFileSync(path.resolve(__dirname, `${mirrmorDir}/package.json`), JSON.stringify(packageJson))
+  //有些分支没有pnpm-lock或者yarn.lock
   try {
     fs.copyFileSync(path.resolve(__dirname, "pnpm-lock.yaml"), path.resolve(__dirname, `${mirrmorDir}/pnpm-lock.yaml`))
   } catch (e) {
@@ -59,47 +60,29 @@ function handlePackageJson() {
   } catch (e) {
     console.log(e);
   }
-
 }
 
 async function copyFile(originPath, mirrmorDir) {
   let targetDir = path.resolve(__dirname, `${mirrmorDir}/${path.dirname(originPath)}`)
   let targetPath = path.resolve(__dirname, `${mirrmorDir}/${originPath}`)
-  //将src开头相对路径依赖改成当前文件所在文件夹的相对路径，此处不直接使用copyFileSync
+  //将src开头相对路径依赖改成根据当前文件所在文件夹的相对路径，此处不直接使用copyFileSync
   mkdirSync(targetDir)
-  // fs.copyFileSync(path.resolve(__dirname, originPath), targetPath)
+  const picExtensions = [".png",".jpg",".jpeg",".bmp",".gif"]
+  let pathExtension = path.extname(originPath).toLowerCase()
+  if (picExtensions.includes(pathExtension)) {
+    fs.copyFileSync(path.resolve(__dirname, originPath), targetPath)
+  }else{
+    await handleCodeFiles(originPath,targetPath)
+  }
+}
+async function handleCodeFiles(originPath,targetPath) {
   let fileContent = fs.readFileSync(originPath, "utf-8");
   let currentDir = path.dirname(originPath)
 
-  function replaceFunc(findStr, $1) {
-    let originStr = $1;
-    $1 = $1.replace("'common/", "'src/common/")
-           .replace("'utils/", "'src/common/utils/")
-           .replace("'service/", "'src/common/service/")
-           .replace("'core/", "'src/common/core/")
-           .replace("'components/", "'src/components/")
-           .replace("'@/", "'src/")
-    if ($1.startsWith("'src")) {
-      //因为引入文件为简写，需要补充完整的路径
-      const upCaseExcludeArr = ["src/common/Constant"]
-      $1 = $1.replaceAll("'", "")
-      if (fs.existsSync($1) && !upCaseExcludeArr.includes($1)) {
-        stat($1).then(isFile => $1 = isFile ? $1 : `${$1}/index.js`)
-      } else if (fs.existsSync(`${$1}.js`) && !fileContainer.has($1)) {
-        $1 = `${$1}.js`
-      } else if (fs.existsSync(`${$1}.jsx`) && !fileContainer.has($1)) {
-        $1 = `${$1}.jsx`
-      }
-      let relativeStr = generateRelativeStr(currentDir)
-      $1 = `'${relativeStr + $1}'`
-    }
-    return findStr.replace(originStr, $1)
-  }
-
   let writeContent = fileContent.replace(/import.+('.+')/g, function (findStr, $1) {
-    replaceFunc(findStr, $1)
+    return replaceFunc(findStr, $1,currentDir)
   }).replace(/\} from ('.+')/g, function (findStr, $1) {
-    replaceFunc(findStr, $1)
+    return replaceFunc(findStr, $1,currentDir)
   });
   fs.writeFileSync(targetPath, writeContent)
   let dependencies = getDependencies(fileContent);
@@ -110,7 +93,6 @@ async function copyFile(originPath, mirrmorDir) {
       return dependence
     }
   })
-  //使用异步stat封装promise，此处使用for循环代替forEach保证await正常运行
   for (let i = 0; i < dependencies.length; i++) {
     let dependence = dependencies[i]
     //todo 此处有坑，fs.existsSync不区分大小写？？？加入upCaseExcludeArr规避
@@ -131,7 +113,6 @@ async function copyFile(originPath, mirrmorDir) {
     }
   }
 }
-
 function generateRelativeStr(dir) {
   let result = ""
   dir.split("/").forEach(() => {
@@ -177,7 +158,31 @@ function getDependencies(fileContent) {
   return dependencies.filter(dependence => dependence.startsWith(".") || dependence.startsWith("src/"))
 }
 
-
+  function replaceFunc(findStr, $1,currentDir) {
+    let originStr = $1;
+    $1 = $1.replace("'common/", "'src/common/")
+           .replace("'utils/", "'src/common/utils/")
+           .replace("'service/", "'src/common/service/")
+           .replace("'core/", "'src/common/core/")
+           .replace("'components/", "'src/components/")
+           .replace("'@/", "'src/")
+    if ($1.startsWith("'src")) {
+      //因为引入文件为简写，需要补充完整的路径
+      const upCaseExcludeArr = ["src/common/Constant"]
+      $1 = $1.replaceAll("'", "")
+      if (fs.existsSync($1) && !upCaseExcludeArr.includes($1)) {
+        stat($1).then(isFile => $1 = isFile ? $1 : `${$1}/index.js`)
+      } else if (fs.existsSync(`${$1}.js`) && !fileContainer.has($1)) {
+        $1 = `${$1}.js`
+      } else if (fs.existsSync(`${$1}.jsx`) && !fileContainer.has($1)) {
+        $1 = `${$1}.jsx`
+      }
+      let relativeStr = generateRelativeStr(currentDir)
+      $1 = `'${relativeStr + $1}'`
+    }
+    let temp = findStr.replace(originStr, $1)
+    return findStr.replace(originStr, $1)
+  }
 function mkdirSync(dirname) {
   if (fs.existsSync(dirname)) {
     return true;
