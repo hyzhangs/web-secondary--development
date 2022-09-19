@@ -20,7 +20,7 @@
 
 + scli方式
   1. 本地运行cmd命令，打开运行窗口。
-  2. 执行以下命令全局安装sdata-cli服务。
+  2. 执行以下命令全局安装sdata-cli服务，最新的sdata-cli版本为1.1.0。
 
   ```js
     npm i sdata-cli -g
