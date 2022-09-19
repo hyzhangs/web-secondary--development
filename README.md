@@ -15,7 +15,7 @@
 + [node.js](http://nodejs.cn/api/)
 + [webpack](https://www.webpackjs.com/)
 + [Vue](https://cn.vuejs.org/) ,[React](https://zh-hans.reactjs.org/) 二选一
-(sdata-cli下载的为R4版本的模板，如果为R3版本环境需要使用R3版本的模板)
+(sdata-cli下载的为R4版本的模板，如果为R3版本环境需要使用R3版本的模板-以old开头)
 ## 开发前准备
 
 + scli方式
