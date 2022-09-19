@@ -29,7 +29,7 @@
   4. npm i或者yarn install安装相关依赖项，运行npm run serve(Vue版本)/npm run start(React版本)即可开始进行开发
 + github方式
   1. 本地下载github仓库[https://github.com/Orochi-sx/web-secondary--development](https://github.com/Orochi-sx/web-secondary--development/)
-  2. 切换对应的分支及插件类型，如vue版本的应用插件为vue-version-app
+  2. 切换分支到template，在packages文件夹中找到对应的文件，如vue版本的应用插件为app-vue-plugin
   3. npm i或者yarn install安装相关依赖项，运行npm run serve(Vue版本)/npm run start(React版本)即可开始进行开发
 
 ## 插件包文件说明
