@@ -18,7 +18,7 @@
 (sdata-cli下载的为R4版本的模板，如果为R3版本环境需要使用R3版本的模板-以old开头)
 ## 开发前准备
 
-+ scli方式
+scli方式
   1. 本地运行cmd命令，打开运行窗口。
   2. 执行以下命令全局安装最新的sdata-cli服务。
 
@@ -27,10 +27,6 @@
   ```
   3. 安装完成后，运行scli i，选择对应模块及框架
   4. npm i或者yarn install安装相关依赖项，运行npm run serve(Vue版本)/npm run start(React版本)即可开始进行开发
-+ github方式
-  1. 本地下载github仓库[https://github.com/Orochi-sx/web-secondary--development](https://github.com/Orochi-sx/web-secondary--development/)
-  2. 切换分支到template，在packages文件夹中找到对应的文件，如vue版本的应用插件为app-vue-plugin
-  3. npm i或者yarn install安装相关依赖项，运行npm run serve(Vue版本)/npm run start(React版本)即可开始进行开发
 
 ## 插件包文件说明
 | 文件名 | 说明                                                                                                                               |
