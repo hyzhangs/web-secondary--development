@@ -29,10 +29,12 @@ const DesignConfiguration = ({ changeConfiguration, configuration }) => {
         form={form}
         onValuesChange={onFormLayoutChange}
       >
-        <Form.Item label="数据源ID" name="assetId" initialValue={''}>
+        <Form.Item label="跳转地址" name="jumpUrl" initialValue={''}>
           <Input />
         </Form.Item>
-
+        <Form.Item label="跳转参数" name="JumpParam" initialValue={''}>
+          <Input />
+        </Form.Item>
       </Form>
     </>
   );

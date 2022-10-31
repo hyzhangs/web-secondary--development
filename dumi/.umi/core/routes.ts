@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react';
-import { ApplyPluginsType } from 'C:/dev/web-secondary--development/node_modules/_@umijs_runtime@3.5.30@@umijs/runtime';
+import { ApplyPluginsType } from '/Users/zhanghongyi/workspace/二开/web-secondary--development/node_modules/@umijs/runtime';
 import * as umiExports from './umiExports';
 import { plugin } from './plugin';
 
@@ -12,7 +12,7 @@ export function getRoutes() {
     "wrappers": [require('../dumi/layout').default],
     "component": ((props) => {
         const React = require('react');
-        const { default: getDemoRenderArgs } = require('C:/dev/web-secondary--development/node_modules/_@umijs_preset-dumi@1.1.45@@umijs/preset-dumi/lib/plugins/features/demo/getDemoRenderArgs');
+        const { default: getDemoRenderArgs } = require('/Users/zhanghongyi/workspace/二开/web-secondary--development/node_modules/@umijs/preset-dumi/lib/plugins/features/demo/getDemoRenderArgs');
         const { default: Previewer } = require('dumi-theme-default/es/builtins/Previewer.js');
         const { usePrefersColor, context } = require('dumi/theme');
 
@@ -55,11 +55,11 @@ export function getRoutes() {
     "__dumiRoot": true,
     "layout": false,
     "path": "/",
-    "wrappers": [require('../dumi/layout').default, require('C:/dev/web-secondary--development/node_modules/_dumi-theme-default@1.1.22@dumi-theme-default/es/layout.js').default],
+    "wrappers": [require('../dumi/layout').default, require('/Users/zhanghongyi/workspace/二开/web-secondary--development/node_modules/dumi-theme-default/es/layout.js').default],
     "routes": [
       {
         "path": "/reporting/快速开始/1",
-        "component": require('C:/dev/web-secondary--development/dumi/docs/1.快速开始.md').default,
+        "component": require('/Users/zhanghongyi/workspace/二开/web-secondary--development/dumi/docs/1.快速开始.md').default,
         "exact": true,
         "meta": {
           "filePath": "dumi/docs/1.快速开始.md",
@@ -96,7 +96,7 @@ export function getRoutes() {
       },
       {
         "path": "/reporting/如何开发插件/2",
-        "component": require('C:/dev/web-secondary--development/dumi/docs/2.开发插件.md').default,
+        "component": require('/Users/zhanghongyi/workspace/二开/web-secondary--development/dumi/docs/2.开发插件.md').default,
         "exact": true,
         "meta": {
           "filePath": "dumi/docs/2.开发插件.md",
@@ -149,7 +149,7 @@ export function getRoutes() {
       },
       {
         "path": "/reporting/如何使用插件/3",
-        "component": require('C:/dev/web-secondary--development/dumi/docs/3.使用插件.md').default,
+        "component": require('/Users/zhanghongyi/workspace/二开/web-secondary--development/dumi/docs/3.使用插件.md').default,
         "exact": true,
         "meta": {
           "filePath": "dumi/docs/3.使用插件.md",
@@ -170,7 +170,7 @@ export function getRoutes() {
       },
       {
         "path": "/reporting/API/4",
-        "component": require('C:/dev/web-secondary--development/dumi/docs/4.API.md').default,
+        "component": require('/Users/zhanghongyi/workspace/二开/web-secondary--development/dumi/docs/4.API.md').default,
         "exact": true,
         "meta": {
           "filePath": "dumi/docs/4.API.md",
@@ -282,7 +282,7 @@ export function getRoutes() {
       },
       {
         "path": "/",
-        "component": require('C:/dev/web-secondary--development/dumi/docs/index.md').default,
+        "component": require('/Users/zhanghongyi/workspace/二开/web-secondary--development/dumi/docs/index.md').default,
         "exact": true,
         "meta": {
           "filePath": "dumi/docs/index.md",
@@ -322,7 +322,7 @@ export function getRoutes() {
       },
       {
         "path": "/reporting/dev/快速预览",
-        "component": require('C:/dev/web-secondary--development/dumi/docs/快速预览.md').default,
+        "component": require('/Users/zhanghongyi/workspace/二开/web-secondary--development/dumi/docs/快速预览.md').default,
         "exact": true,
         "meta": {
           "filePath": "dumi/docs/快速预览.md",
